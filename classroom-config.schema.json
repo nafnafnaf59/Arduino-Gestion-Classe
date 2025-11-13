@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://nafnafnaf59.github.io/arduino-classroom-deploy/schema/classroom-config.schema.json",
+  "title": "Arduino Classroom Deploy - Configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profiles", "hosts"],
+  "properties": {
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "fqbn", "maxParallel", "timeoutMs"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "description": {
+            "type": "string"
+          },
+          "fqbn": {
+            "type": "string",
+            "pattern": "^[a-z0-9:-]+$"
+          },
+          "baudRate": {
+            "type": "integer",
+            "minimum": 1200,
+            "maximum": 1000000
+          },
+          "maxParallel": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 32
+          },
+          "timeoutMs": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 600000
+          },
+          "logFormat": {
+            "type": "string",
+            "enum": ["text", "json"]
+          },
+          "defaultSketch": {
+            "type": "string"
+          },
+          "retryCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        }
+      }
+    },
+    "hosts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "address"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "address": {
+            "type": "string",
+            "format": "hostname"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            }
+          },
+          "os": {
+            "type": "string",
+            "enum": ["windows", "linux", "macos"]
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "logDirectory": {
+          "type": "string"
+        },
+        "auditEnabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "autoUpdate": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}
