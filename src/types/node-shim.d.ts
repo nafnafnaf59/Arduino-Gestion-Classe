@@ -1,0 +1,14 @@
+declare module "fs";
+declare module "fs/promises";
+declare module "path";
+declare module "process";
+declare module "events";
+declare module "timers/promises";
+declare module "child_process";
+declare module "util";
+declare module "crypto";
+declare module "pino";
+declare module "uuid";
+declare module "rxjs";
+declare module "ajv";
+declare module "ajv-formats";

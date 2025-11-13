@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync } from "node:fs";
-import path from "node:path";
-import process from "node:process";
+import { existsSync, mkdirSync } from "fs";
+import path from "path";
+import process from "process";
 import pino, { DestinationStream, Logger } from "pino";
 import { LogFormat } from "../models/types";
 

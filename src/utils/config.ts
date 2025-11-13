@@ -1,6 +1,6 @@
-import * as fs from "node:fs/promises";
-import path from "node:path";
-import process from "node:process";
+import * as fs from "fs/promises";
+import path from "path";
+import process from "process";
 import type { AnySchema } from "ajv";
 import { ClassroomConfig, ClassroomOptions, DeploymentProfile, LogFormat } from "../models/types";
 import configSchema from "../../classroom-config.schema.json";
