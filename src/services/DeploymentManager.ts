@@ -151,6 +151,17 @@ export class DeploymentManager {
     return this.hostRegistry.getHostById(hostId);
   }
 
+  setHostEnabled(hostId: string, enabled: boolean): void {
+    const host = this.hostRegistry.getHostById(hostId);
+    if (!host) {
+      return;
+    }
+    this.hostRegistry.upsertHost({
+      ...host,
+      enabled
+    });
+  }
+
   getGroups(): ReadonlyArray<HostGroup> {
     return this.hostRegistry.listGroups();
   }

@@ -128,6 +128,12 @@ export interface DeploymentOptions {
   readonly logFormat?: LogFormat;
 }
 
+export interface SketchOption {
+  readonly id: string;
+  readonly label: string;
+  readonly path: string;
+}
+
 export interface ClassroomOptions {
   readonly logDirectory?: string;
   readonly auditEnabled?: boolean;

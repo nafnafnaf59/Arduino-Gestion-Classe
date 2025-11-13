@@ -1,0 +1,281 @@
+:root {
+  color-scheme: light dark;
+  --accent: #0078d4;
+  --danger: #c23934;
+  --success: #0f7b0f;
+  --warning: #c7931a;
+  font-family: "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #1e1e1e;
+  color: #f3f3f3;
+}
+
+.acd-dashboard {
+  display: grid;
+  grid-template-columns: 320px 1fr 360px;
+  gap: 1rem;
+  padding: 1rem;
+  box-sizing: border-box;
+  height: 100vh;
+}
+
+.acd-card {
+  background: #252526;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.acd-card h2,
+.acd-card h3 {
+  margin: 0;
+}
+
+.acd-select,
+.acd-input,
+.acd-textarea {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #3c3c3c;
+  background: #1e1e1e;
+  color: #f3f3f3;
+  box-sizing: border-box;
+}
+
+.acd-input:focus,
+.acd-select:focus {
+  outline: 1px solid var(--accent);
+  border-color: var(--accent);
+}
+
+.acd-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 6px;
+  border: none;
+  background: #3a3d41;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.acd-button:hover {
+  background: #4e5156;
+}
+
+.acd-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.acd-button-primary {
+  background: var(--accent);
+}
+
+.acd-button-primary:hover {
+  background: #2895ff;
+}
+
+.acd-button-danger {
+  background: var(--danger);
+}
+
+.acd-button-danger:hover {
+  background: #d95c58;
+}
+
+.acd-button-ghost {
+  background: transparent;
+  border: 1px solid #3c3c3c;
+}
+
+.acd-host-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.acd-host-table th,
+.acd-host-table td {
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid #2f2f2f;
+  text-align: left;
+}
+
+.acd-host-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.acd-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.acd-tag-list li {
+  background: #373737;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.acd-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.acd-status-idle {
+  background: #333;
+  color: #cfcfcf;
+}
+
+.acd-status-queued {
+  background: #1e4c8c;
+  color: #f3f3f3;
+}
+
+.acd-status-running {
+  background: #0063b1;
+  color: #fff;
+}
+
+.acd-status-success {
+  background: var(--success);
+  color: #fff;
+}
+
+.acd-status-error {
+  background: var(--danger);
+  color: #fff;
+}
+
+.acd-status-cancelled {
+  background: #6e6e6e;
+  color: #fff;
+}
+
+.acd-status-skipped {
+  background: #555;
+  color: #ddd;
+}
+
+.acd-status-timeout {
+  background: var(--warning);
+  color: #fff;
+}
+
+.acd-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.acd-panel-right {
+  overflow: hidden;
+}
+
+.acd-log-list {
+  flex: 1;
+  background: #1b1b1b;
+  border-radius: 8px;
+  padding: 0.75rem;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+.acd-log-entry {
+  border-left: 3px solid transparent;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.4rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+}
+
+.acd-log-entry:last-child {
+  margin-bottom: 0;
+}
+
+.acd-log-entry time {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.acd-log-info {
+  border-color: var(--accent);
+}
+
+.acd-log-warn {
+  border-color: var(--warning);
+}
+
+.acd-log-error {
+  border-color: var(--danger);
+}
+
+.acd-log-debug {
+  border-color: #888;
+}
+
+.acd-empty {
+  padding: 1rem;
+  opacity: 0.7;
+  text-align: center;
+}
+
+.acd-analysis,
+.acd-metadata {
+  background: #1b1b1b;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.acd-analysis ul,
+.acd-metadata ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.acd-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.acd-badge-warn {
+  background: rgba(199, 147, 26, 0.2);
+  color: var(--warning);
+}
+
+@media (max-width: 1280px) {
+  .acd-dashboard {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}
