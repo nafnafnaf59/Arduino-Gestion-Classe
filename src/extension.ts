@@ -5,7 +5,7 @@ import { DeploymentManager } from "./services/DeploymentManager";
 import { HostRegistry } from "./services/HostRegistry";
 import { SketchAnalyzer } from "./services/SketchAnalyzer";
 import { WinRMClient } from "./services/WinRMClient";
-import type { DeploymentJob, SketchMetadata, SketchOption } from "./models/types";
+import type { SketchMetadata, SketchOption } from "./models/types";
 interface DashboardMessage {
   readonly type:
     | "ready"
@@ -15,6 +15,7 @@ interface DashboardMessage {
     | "erase"
     | "retry"
     | "cancel"
+    | "profile-change"
     | "toggle-host";
   readonly payload?: any;
 }
@@ -122,11 +123,10 @@ export function start(context: theia.PluginContext): void {
 
       const jobSubscription = manager
         .observeJobs()
-        .subscribe((jobs: ReadonlyArray<DeploymentJob>) => {
+        .subscribe(() => {
           void panel.webview.postMessage({
             type: "queue-update",
             payload: {
-              jobs,
               snapshot: manager?.getSnapshot()
             }
           });
@@ -134,7 +134,7 @@ export function start(context: theia.PluginContext): void {
 
       disposables.push({ dispose: () => jobSubscription.unsubscribe?.() });
 
-  panel.webview.onDidReceiveMessage(async (message: DashboardMessage) => {
+      panel.webview.onDidReceiveMessage(async (message: DashboardMessage) => {
         if (!manager) {
           return;
         }
@@ -215,6 +215,24 @@ export function start(context: theia.PluginContext): void {
             }
             break;
           }
+          case "profile-change":
+            if (message.payload?.profileId) {
+              try {
+                manager.selectProfile(message.payload.profileId);
+                void panel.webview.postMessage({
+                  type: "queue-update",
+                  payload: {
+                    snapshot: manager.getSnapshot()
+                  }
+                });
+              } catch (error) {
+                void panel.webview.postMessage({
+                  type: "error",
+                  payload: error instanceof Error ? error.message : String(error)
+                });
+              }
+            }
+            break;
           case "retry":
             manager.retryFailedJobs();
             break;

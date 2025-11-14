@@ -94,6 +94,7 @@
                     <th><input type="checkbox" id="acd-select-all" /></th>
                     <th>Nom</th>
                     <th>Adresse</th>
+                    <th>Actif</th>
                     <th>Tags</th>
                     <th>État</th>
                     <th>Port</th>
@@ -140,6 +141,7 @@
     eraseButton.addEventListener("click", () => triggerErase());
     retryButton.addEventListener("click", () => sendMessage({ type: "retry" }));
     cancelButton.addEventListener("click", () => sendMessage({ type: "cancel" }));
+    profileSelect.addEventListener("change", handleProfileChange);
   }
 
   function sendMessage(message) {
@@ -220,10 +222,6 @@
     const defaultProfile = state.selectedProfileId || (state.profiles[0] && state.profiles[0].id) || "";
     profileSelect.value = defaultProfile;
     state.selectedProfileId = defaultProfile;
-    profileSelect.addEventListener("change", (event) => {
-      state.selectedProfileId = event.target.value;
-      sendMessage({ type: "profile-change", payload: { profileId: state.selectedProfileId } });
-    });
   }
 
   function renderSnapshot() {
@@ -270,9 +268,16 @@
           .join("") || "<span class=\"acd-tag-empty\">—</span>";
         return `
           <tr data-host-id="${escapeHtml(host.id)}" class="${host.enabled ? "" : "acd-host-disabled"}">
-            <td><input type="checkbox" class="acd-host-checkbox" ${isSelected ? "checked" : ""}></td>
+            <td><input type="checkbox" class="acd-host-checkbox" ${isSelected ? "checked" : ""} ${
+              host.enabled ? "" : "disabled"
+            }></td>
             <td>${escapeHtml(host.name)}</td>
             <td>${escapeHtml(host.address)}</td>
+            <td>
+              <button type="button" class="acd-toggle-host" data-enabled="${host.enabled ? "1" : "0"}">
+                ${host.enabled ? "Activé" : "Coupé"}
+              </button>
+            </td>
             <td><ul class="acd-tag-list">${tags}</ul></td>
             <td><span class="${statusClass}" title="${escapeHtml(status.message || "")}">${formatStatusLabel(status.status)}</span></td>
             <td>${status.port ? escapeHtml(status.port) : "—"}</td>
@@ -281,7 +286,7 @@
       })
       .join("\n");
 
-    hostTableBody.innerHTML = rows || '<tr><td colspan="6" class="acd-empty">Aucun poste.</td></tr>';
+    hostTableBody.innerHTML = rows || '<tr><td colspan="7" class="acd-empty">Aucun poste.</td></tr>';
 
     hostTableBody.querySelectorAll(".acd-host-checkbox").forEach((checkbox) => {
       checkbox.addEventListener("change", (event) => {
@@ -295,6 +300,47 @@
         } else {
           state.selectedHostIds.delete(hostId);
         }
+      });
+    });
+
+    hostTableBody.querySelectorAll(".acd-toggle-host").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const element = event.currentTarget;
+        if (!(element instanceof HTMLElement)) {
+          return;
+        }
+        const row = element.closest("tr");
+        if (!row) {
+          return;
+        }
+        const hostId = row.getAttribute("data-host-id");
+        if (!hostId) {
+          return;
+        }
+        const enabled = element.getAttribute("data-enabled") === "1";
+        const nextEnabled = !enabled;
+        sendMessage({
+          type: "toggle-host",
+          payload: {
+            hostId,
+            enabled: nextEnabled
+          }
+        });
+        updateHosts(
+          state.hosts.map((host) =>
+            host.id === hostId
+              ? {
+                  ...host,
+                  enabled: nextEnabled
+                }
+              : host
+          )
+        );
+        addLog(
+          `Poste ${hostId} ${nextEnabled ? "réactivé" : "mis en pause"}`,
+          nextEnabled ? "info" : "warn",
+          "hosts"
+        );
       });
     });
   }
@@ -342,11 +388,19 @@
       state.selectedSketch = value;
       state.customSketchPath = "";
     }
+    state.analysis = undefined;
+    state.metadata = undefined;
+    renderAnalysis();
+    renderMetadata();
   }
 
   function handleCustomSketchChange(event) {
     state.customSketchPath = event.target.value.trim();
     state.selectedSketch = state.customSketchPath;
+    state.analysis = undefined;
+    state.metadata = undefined;
+    renderAnalysis();
+    renderMetadata();
   }
 
   function handleFilterChange(event) {
@@ -355,6 +409,13 @@
       addLog(`Filtre appliqué: ${value}`, "debug", "filter");
     }
     renderHosts();
+  }
+
+  function handleProfileChange(event) {
+    const profileId = event.target.value;
+    state.selectedProfileId = profileId;
+    sendMessage({ type: "profile-change", payload: { profileId } });
+    addLog(`Profil ${profileId || "(par défaut)"} sélectionné`, "debug", "profile");
   }
 
   function triggerAnalyze() {
@@ -401,6 +462,10 @@
       addLog("Sélectionnez au moins un poste", "warn", "deploy");
       return false;
     }
+    if (!state.metadata) {
+      addLog("Compilez le sketch avant de déployer", "warn", "deploy");
+      return false;
+    }
     return true;
   }
 
@@ -416,7 +481,7 @@
         hostIds,
         profileId: state.selectedProfileId,
         sketchPath: state.selectedSketch,
-        metadata: state.metadata || null
+        metadata: state.metadata
       }
     });
   }
