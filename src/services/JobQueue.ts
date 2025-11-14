@@ -6,7 +6,6 @@ import {
   DeploymentJob,
   DeploymentResult,
   DeploymentContext,
-  JobState,
   QueueSnapshot,
   QueueTelemetry
 } from "../models/types";

@@ -1,11 +1,12 @@
-import js from "@eslint/js";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
-import reactPlugin from "eslint-plugin-react";
-import reactHooks from "eslint-plugin-react-hooks";
-import prettier from "eslint-config-prettier";
+const js = require("@eslint/js");
+const tsPlugin = require("@typescript-eslint/eslint-plugin");
+const tsParser = require("@typescript-eslint/parser");
+const reactPlugin = require("eslint-plugin-react");
+const reactHooks = require("eslint-plugin-react-hooks");
+const prettier = require("eslint-config-prettier");
+const globals = require("globals");
 
-export default [
+module.exports = [
   {
     ignores: ["lib/**", "node_modules/**", "dist/**"]
   },
@@ -15,17 +16,28 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: "./tsconfig.json",
+  project: "./tsconfig.json",
+  tsconfigRootDir: __dirname,
         sourceType: "module",
         ecmaFeatures: {
           jsx: true
         }
+      },
+      globals: {
+        ...globals.es2021,
+        ...globals.node,
+        ...globals.browser
       }
     },
     plugins: {
       "@typescript-eslint": tsPlugin,
       react: reactPlugin,
       "react-hooks": reactHooks
+    },
+    settings: {
+      react: {
+        version: "detect"
+      }
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
@@ -41,7 +53,29 @@ export default [
             attributes: false
           }
         }
-      ]
+      ],
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/require-await": "off",
+      "@typescript-eslint/no-floating-promises": [
+        "error",
+        {
+          ignoreVoid: true,
+          ignoreIIFE: true
+        }
+      ],
+      "react/no-unescaped-entities": "warn"
+    }
+  },
+  {
+    files: ["src/types/**/*.d.ts"],
+    rules: {
+      "@typescript-eslint/ban-types": "off",
+      "@typescript-eslint/no-explicit-any": "off"
     }
   },
   prettier

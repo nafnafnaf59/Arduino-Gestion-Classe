@@ -104,7 +104,7 @@ export const CredentialsModal: FC<CredentialsModalProps> = ({ visible, onClose, 
             <option value="ssh">SSH</option>
           </select>
 
-          <label htmlFor="credential-username">Nom d'utilisateur</label>
+          <label htmlFor="credential-username">Nom d&apos;utilisateur</label>
           <input
             id="credential-username"
             name="username"

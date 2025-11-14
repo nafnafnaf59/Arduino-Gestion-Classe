@@ -6,19 +6,55 @@ import { HostRegistry } from "./services/HostRegistry";
 import { SketchAnalyzer } from "./services/SketchAnalyzer";
 import { WinRMClient } from "./services/WinRMClient";
 import type { SketchMetadata, SketchOption } from "./models/types";
-interface DashboardMessage {
-  readonly type:
-    | "ready"
-    | "analyze"
-    | "compile"
-    | "deploy"
-    | "erase"
-    | "retry"
-    | "cancel"
-    | "profile-change"
-    | "toggle-host";
-  readonly payload?: any;
-}
+
+type ReadyMessage = { readonly type: "ready" };
+type AnalyzeMessage = {
+  readonly type: "analyze";
+  readonly payload: { sketchPath: string; fqbn: string };
+};
+type CompileMessage = {
+  readonly type: "compile";
+  readonly payload: { sketchPath: string; profileId: string };
+};
+type DeployMessage = {
+  readonly type: "deploy";
+  readonly payload: {
+    hostIds: ReadonlyArray<string>;
+    profileId: string;
+    sketchPath: string;
+    metadata: SketchMetadata;
+    mode?: "normal" | "dry-run";
+  };
+};
+type EraseMessage = {
+  readonly type: "erase";
+  readonly payload: {
+    hostIds: ReadonlyArray<string>;
+    profileId: string;
+    sketchPath?: string;
+  };
+};
+type RetryMessage = { readonly type: "retry" };
+type CancelMessage = { readonly type: "cancel" };
+type ProfileChangeMessage = {
+  readonly type: "profile-change";
+  readonly payload: { profileId: string };
+};
+type ToggleHostMessage = {
+  readonly type: "toggle-host";
+  readonly payload: { hostId: string; enabled: boolean };
+};
+
+type DashboardMessage =
+  | ReadyMessage
+  | AnalyzeMessage
+  | CompileMessage
+  | DeployMessage
+  | EraseMessage
+  | RetryMessage
+  | CancelMessage
+  | ProfileChangeMessage
+  | ToggleHostMessage;
 
 import { configureLogger, getLogger } from "./utils/logger";
 
@@ -89,7 +125,7 @@ export function start(context: theia.PluginContext): void {
     },
     async () => {
       if (!manager) {
-        theia.window.showErrorMessage("Le gestionnaire de déploiement n'est pas encore prêt.");
+        void theia.window.showErrorMessage("Le gestionnaire de déploiement n'est pas encore prêt.");
         return;
       }
 
@@ -138,7 +174,7 @@ export function start(context: theia.PluginContext): void {
         if (!manager) {
           return;
         }
-        switch (message?.type) {
+        switch (message.type) {
           case "ready":
             void panel.webview.postMessage({
               type: "initial-state",
@@ -184,9 +220,10 @@ export function start(context: theia.PluginContext): void {
                 hosts: manager
                   .getHosts()
                   .filter((host) => message.payload.hostIds.includes(host.id)),
-                metadata: message.payload.metadata as SketchMetadata,
+                metadata: message.payload.metadata,
                 profileId: message.payload.profileId,
-                mode: message.payload.mode
+                mode: message.payload.mode,
+                sketchPath: message.payload.sketchPath
               });
               void panel.webview.postMessage({ type: "deploy-started" });
             } catch (error) {
@@ -216,21 +253,19 @@ export function start(context: theia.PluginContext): void {
             break;
           }
           case "profile-change":
-            if (message.payload?.profileId) {
-              try {
-                manager.selectProfile(message.payload.profileId);
-                void panel.webview.postMessage({
-                  type: "queue-update",
-                  payload: {
-                    snapshot: manager.getSnapshot()
-                  }
-                });
-              } catch (error) {
-                void panel.webview.postMessage({
-                  type: "error",
-                  payload: error instanceof Error ? error.message : String(error)
-                });
-              }
+            try {
+              manager.selectProfile(message.payload.profileId);
+              void panel.webview.postMessage({
+                type: "queue-update",
+                payload: {
+                  snapshot: manager.getSnapshot()
+                }
+              });
+            } catch (error) {
+              void panel.webview.postMessage({
+                type: "error",
+                payload: error instanceof Error ? error.message : String(error)
+              });
             }
             break;
           case "retry":

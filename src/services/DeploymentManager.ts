@@ -210,7 +210,6 @@ export class DeploymentManager {
 
   async enqueueErase(params: EnqueueEraseParams): Promise<ReadonlyArray<DeploymentJob>> {
     const profile = this.resolveProfile(params.profileId);
-    const eraseSketch = this.sketchAnalyzer.buildEraseSketchTemplate(params.hosts[0], profile.fqbn);
     const hexPath = resolveWorkspacePath("erase.hex", this.workspaceDir);
 
     const jobs: DeploymentJob[] = [];
