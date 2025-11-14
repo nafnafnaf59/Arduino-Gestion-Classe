@@ -222,8 +222,7 @@ export function start(context: theia.PluginContext): void {
                   .filter((host) => message.payload.hostIds.includes(host.id)),
                 metadata: message.payload.metadata,
                 profileId: message.payload.profileId,
-                mode: message.payload.mode,
-                sketchPath: message.payload.sketchPath
+                mode: message.payload.mode
               });
               void panel.webview.postMessage({ type: "deploy-started" });
             } catch (error) {

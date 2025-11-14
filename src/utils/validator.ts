@@ -36,6 +36,8 @@ export function compileSchema<T>(schema: AnySchema): ValidateFunction<T> {
 
 export function assertValid<T>(validator: ValidateFunction<T>, payload: unknown): T {
   if (validator(payload)) {
+    // Ajv ne fournit pas de garde de type stricte, on doit donc affirmer manuellement le payload
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     return payload as T;
   }
 

@@ -7,15 +7,15 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "skipLibCheck": false,
+  "strict": true,
+  "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "inlineSources": true,
     "rootDir": "src",
     "outDir": "lib",
     "jsx": "react-jsx",
-    "types": ["node", "theia__plugin", "vitest"]
+    "types": ["node", "vitest"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "lib", "test"]

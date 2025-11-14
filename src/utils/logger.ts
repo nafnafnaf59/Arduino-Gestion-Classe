@@ -53,8 +53,14 @@ function createRootLogger(dest: DestinationStream, level: string): Logger {
   );
 }
 
+function hasEnd(stream: DestinationStream): stream is DestinationStream & { end: () => void } {
+  return typeof (stream as { end?: unknown }).end === "function";
+}
+
 function reconfigureLogger(): void {
-  destination.end?.();
+  if (hasEnd(destination)) {
+    destination.end();
+  }
   destination = createDestination(currentLogDirectory, currentLogFormat);
   rootLogger = createRootLogger(destination, currentLevel);
 }
